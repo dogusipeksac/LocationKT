@@ -44,6 +44,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        mMap.setOnMapLongClickListener(listener)
+
+
 
         // Add a marker in Sydney and move the camera
         /*
@@ -114,5 +117,36 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    val listener= object : GoogleMap.OnMapLongClickListener{
+        override fun onMapLongClick(p0: LatLng?) {
+            mMap.clear()
+            val geocoder=Geocoder(this@MapsActivity,Locale.getDefault())
+
+            if(p0 != null){
+                var address=""
+                try {
+                    val addressList=geocoder.getFromLocation(p0.latitude,p0.longitude,1)
+                    if(addressList.size>0){
+                        if(addressList[0].thoroughfare!=null){
+                            address+=addressList[0].thoroughfare
+                            if(addressList[0].subThoroughfare!=null){
+                                address+=" No :"+addressList[0].subThoroughfare
+                            }
+                        }
+
+                    }
+                }catch (e:Exception){
+                    e.printStackTrace()
+                }
+
+                mMap.addMarker(MarkerOptions().position(p0).title(address))
+            }
+
+
+
+        }
+
     }
 }
